@@ -79,76 +79,76 @@ pushd "${CARLAUE4_ROOT_FOLDER}" >/dev/null
 # -- Clean CarlaUE4 ------------------------------------------------------------
 # ==============================================================================
 
-if ${HARD_CLEAN} ; then
+#if ${HARD_CLEAN} ; then
+#
+#  if [ ! -f Makefile ]; then
+#    fatal_error "The project wasn't built before!"
+#  fi
+#
+#  log "Doing a \"hard\" clean of the Unreal Engine project."
+#
+#  make CarlaUE4Editor ARGS=-clean
+#
+#fi
 
-  if [ ! -f Makefile ]; then
-    fatal_error "The project wasn't built before!"
-  fi
-
-  log "Doing a \"hard\" clean of the Unreal Engine project."
-
-  make CarlaUE4Editor ARGS=-clean
-
-fi
-
-if ${REMOVE_INTERMEDIATE} ; then
-
-  log "Cleaning intermediate files and folders."
-
-  UE4_INTERMEDIATE_FOLDERS="Binaries Build Intermediate DerivedDataCache"
-
-  rm -Rf ${UE4_INTERMEDIATE_FOLDERS}
-
-  rm -f Makefile
-
-  pushd "${CARLAUE4_PLUGIN_ROOT_FOLDER}" >/dev/null
-
-  rm -Rf ${UE4_INTERMEDIATE_FOLDERS}
-
-  popd >/dev/null
-
-fi
+#if ${REMOVE_INTERMEDIATE} ; then
+#
+#  log "Cleaning intermediate files and folders."
+#
+#  UE4_INTERMEDIATE_FOLDERS="Binaries Build Intermediate DerivedDataCache"
+#
+#  rm -Rf ${UE4_INTERMEDIATE_FOLDERS}
+#
+#  rm -f Makefile
+#
+#  pushd "${CARLAUE4_PLUGIN_ROOT_FOLDER}" >/dev/null
+#
+#  rm -Rf ${UE4_INTERMEDIATE_FOLDERS}
+#
+#  popd >/dev/null
+#
+#fi
 
 # ==============================================================================
 # -- Build CarlaUE4 ------------------------------------------------------------
 # ==============================================================================
 
-if ${BUILD_CARLAUE4} ; then
-
-  if [ ! -f Makefile ]; then
-
-    # This command fails sometimes but normally we can continue anyway.
-    set +e
-    log "Generate Unreal project files."
-    ${UE4_ROOT}/GenerateProjectFiles.sh -project="${PWD}/CarlaUE4.uproject" -game -engine -makefiles
-    set -e
-
-  fi
-
-  log "Build CarlaUE4 project."
-  make CarlaUE4Editor
-
-  #Providing the user with the ExportedMaps folder
-  EXPORTED_MAPS="${CARLAUE4_ROOT_FOLDER}/Content/Carla/ExportedMaps"
-  mkdir -p "${EXPORTED_MAPS}"
-
-
-fi
+#if ${BUILD_CARLAUE4} ; then
+#
+#  if [ ! -f Makefile ]; then
+#
+#    # This command fails sometimes but normally we can continue anyway.
+#    set +e
+#    log "Generate Unreal project files."
+#    ${UE4_ROOT}/GenerateProjectFiles.sh -project="${PWD}/CarlaUE4.uproject" -game -engine -makefiles
+#    set -e
+#
+#  fi
+#
+#  log "Build CarlaUE4 project."
+#  make CarlaUE4Editor
+#
+#  #Providing the user with the ExportedMaps folder
+#  EXPORTED_MAPS="${CARLAUE4_ROOT_FOLDER}/Content/Carla/ExportedMaps"
+#  mkdir -p "${EXPORTED_MAPS}"
+#
+#
+#fi
 
 # ==============================================================================
 # -- Launch UE4Editor ----------------------------------------------------------
 # ==============================================================================
 
-if ${LAUNCH_UE4_EDITOR} ; then
-
-  log "Launching UE4Editor..."
-  ${GDB} ${UE4_ROOT}/Engine/Binaries/Linux/UE4Editor "${PWD}/CarlaUE4.uproject" ${RHI}
-
-else
-
-  log "Success!"
-
-fi
+#if ${LAUNCH_UE4_EDITOR} ; then
+#
+#  log "Launching UE4Editor..."
+#  ${GDB} ${UE4_ROOT}/Engine/Binaries/Linux/UE4Editor "${PWD}/CarlaUE4.uproject" ${RHI}
+#
+#else
+#
+#  log "Success!"
+#
+#fi
 
 # ==============================================================================
 # -- ...and we are done --------------------------------------------------------

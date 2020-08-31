@@ -95,7 +95,7 @@ if ${DO_CARLA_RELEASE} ; then
   mkdir -p ${RELEASE_BUILD_FOLDER}
 
   ${UE4_ROOT}/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun \
-      -project="${PWD}/CarlaUE4.uproject" \
+      -project="${PWD}/FreiCarSim.uproject" \
       -nocompileeditor -nop4 -cook -stage -archive -package -iterate \
       -clientconfig=${PACKAGE_CONFIG} -ue4exe=UE4Editor \
       -prereqs -targetplatform=Linux -build -utf8output \
@@ -142,13 +142,10 @@ if ${DO_CARLA_RELEASE} ; then
   copy_if_changed "./PythonAPI/examples/requirements.txt" "${DESTINATION}/PythonAPI/examples/"
 
   copy_if_changed "./PythonAPI/util/*.py" "${DESTINATION}/PythonAPI/util/"
-  copy_if_changed "./PythonAPI/util/opendrive/" "${DESTINATION}/PythonAPI/util/opendrive/"
   copy_if_changed "./PythonAPI/util/requirements.txt" "${DESTINATION}/PythonAPI/util/"
 
-  copy_if_changed "./Co-Simulation/" "${DESTINATION}/Co-Simulation/"
-
-  copy_if_changed "./Unreal/CarlaUE4/Content/Carla/HDMaps/*.pcd" "${DESTINATION}/HDMaps/"
-  copy_if_changed "./Unreal/CarlaUE4/Content/Carla/HDMaps/Readme.md" "${DESTINATION}/HDMaps/README"
+  copy_if_changed "./Unreal/FreiCarSim/Content/Carla/HDMaps/*.pcd" "${DESTINATION}/HDMaps/"
+  copy_if_changed "./Unreal/FreiCarSim/Content/Carla/HDMaps/Readme.md" "${DESTINATION}/HDMaps/README"
 
   popd >/dev/null
 
@@ -158,25 +155,25 @@ fi
 # -- Zip the project -----------------------------------------------------------
 # ==============================================================================
 
-if ${DO_CARLA_RELEASE} && ${DO_TARBALL} ; then
-
-  DESTINATION=${RELEASE_PACKAGE_PATH}
-  SOURCE=${RELEASE_BUILD_FOLDER}/LinuxNoEditor
-
-  pushd "${SOURCE}" >/dev/null
-
-  log "Packaging CARLA release."
-
-  rm -f ./Manifest_NonUFSFiles_Linux.txt
-  rm -f ./Manifest_UFSFiles_Linux.txt
-  rm -Rf ./CarlaUE4/Saved
-  rm -Rf ./Engine/Saved
-
-  tar -czvf ${DESTINATION} *
-
-  popd >/dev/null
-
-fi
+#if ${DO_CARLA_RELEASE} && ${DO_TARBALL} ; then
+#
+#  DESTINATION=${RELEASE_PACKAGE_PATH}
+#  SOURCE=${RELEASE_BUILD_FOLDER}/LinuxNoEditor
+#
+#  pushd "${SOURCE}" >/dev/null
+#
+#  log "Packaging CARLA release."
+#
+#  rm -f ./Manifest_NonUFSFiles_Linux.txt
+#  rm -f ./Manifest_UFSFiles_Linux.txt
+#  rm -Rf ./FreiCarSim/Saved
+#  rm -Rf ./Engine/Saved
+#
+#  tar -czvf ${DESTINATION} *
+#
+#  popd >/dev/null
+#
+#fi
 
 # ==============================================================================
 # -- Remove intermediate files -------------------------------------------------
@@ -212,14 +209,14 @@ for PACKAGE_NAME in "${PACKAGES[@]}" ; do if [[ ${PACKAGE_NAME} != "Carla" ]] ; 
   pushd "${CARLAUE4_ROOT_FOLDER}" > /dev/null
 
   # Prepare cooking of package
-  ${UE4_ROOT}/Engine/Binaries/Linux/UE4Editor "${CARLAUE4_ROOT_FOLDER}/CarlaUE4.uproject" \
+  ${UE4_ROOT}/Engine/Binaries/Linux/UE4Editor "${CARLAUE4_ROOT_FOLDER}/FreiCarSim.uproject" \
       -run=PrepareAssetsForCooking -PackageName=${PACKAGE_NAME} -OnlyPrepareMaps=false
 
   PACKAGE_FILE=$(<${PACKAGE_PATH_FILE})
   MAPS_TO_COOK=$(<${MAP_LIST_FILE})
 
   # Cook maps
-  ${UE4_ROOT}/Engine/Binaries/Linux/UE4Editor "${CARLAUE4_ROOT_FOLDER}/CarlaUE4.uproject" \
+  ${UE4_ROOT}/Engine/Binaries/Linux/UE4Editor "${CARLAUE4_ROOT_FOLDER}/FreiCarSim.uproject" \
       -run=cook -map="${MAPS_TO_COOK}" -cooksinglepackage -targetplatform="LinuxNoEditor" \
       -OutputDir="${BUILD_FOLDER}"
 
@@ -237,7 +234,7 @@ for PACKAGE_NAME in "${PACKAGES[@]}" ; do if [[ ${PACKAGE_NAME} != "Carla" ]] ; 
 
     log "\nPackaging '${PACKAGE_NAME}'..."
 
-    SUBST_PATH="${BUILD_FOLDER}/CarlaUE4"
+    SUBST_PATH="${BUILD_FOLDER}/FreiCarSim"
     SUBST_FILE="${PACKAGE_FILE/${CARLAUE4_ROOT_FOLDER}/${SUBST_PATH}}"
 
     # Copy the package config file to package
@@ -278,10 +275,10 @@ for PACKAGE_NAME in "${PACKAGES[@]}" ; do if [[ ${PACKAGE_NAME} != "Carla" ]] ; 
 
     done
 
-    rm -Rf "./CarlaUE4/Metadata"
-    rm -Rf "./CarlaUE4/Plugins"
-    rm -Rf "./CarlaUE4/Content/${PACKAGE_NAME}/Maps/${PROPS_MAP_NAME}"
-    rm -f "./CarlaUE4/AssetRegistry.bin"
+    rm -Rf "./FreiCarSim/Metadata"
+    rm -Rf "./FreiCarSim/Plugins"
+    rm -Rf "./FreiCarSim/Content/${PACKAGE_NAME}/Maps/${PROPS_MAP_NAME}"
+    rm -f "./FreiCarSim/AssetRegistry.bin"
 
     tar -czvf ${DESTINATION} *
 
