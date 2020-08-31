@@ -23,8 +23,18 @@ enum class ECityObjectLabel : uint8
   Sidewalks    =   8u,
   TrafficSigns =  12u,
   Vegetation   =   9u,
-  Vehicles     =  10u,
+  Vehicles     =  20u,
   Walls        =  11u,
+  Freicar1     =  21u,
+  Freicar2     =  22u,
+  Freicar3     =  23u,
+  Freicar4     =  24u,
+  Freicar5     =  25u,
+  Freicar6     =  26u,
+  Freicar7     =  27u,
+  Freicar8     =  28u,
+  Freicar9     =  29u,
+  Freicar10     =  30u
 };
 
 /// Sets actors' custom depth stencil value for semantic segmentation according

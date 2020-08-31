@@ -36,13 +36,33 @@ static ECityObjectLabel GetLabelByFolderName(const FString &String) {
   else                                  return ECityObjectLabel::None;
 }
 
+static ECityObjectLabel GetLabelByAssetName(const FString &String) {
+  if      (String == "big_with_cover_PhysicsAsset.big_with_cover_PhysicsAsset")         return ECityObjectLabel::Freicar1;
+  else if (String == "big_with_cover_PhysicsAsset.big_with_cover_PhysicsAsset_2")       return ECityObjectLabel::Freicar2;
+  else if (String == "big_with_cover_PhysicsAsset.big_with_cover_PhysicsAsset_3")       return ECityObjectLabel::Freicar3;
+  else if (String == "big_with_cover_PhysicsAsset.big_with_cover_PhysicsAsset_4")       return ECityObjectLabel::Freicar4;
+  else if (String == "big_with_cover_PhysicsAsset.big_with_cover_PhysicsAsset_5")       return ECityObjectLabel::Freicar5;
+  else if (String == "big_with_cover_PhysicsAsset.big_with_cover_PhysicsAsset_6")       return ECityObjectLabel::Freicar6;
+  else if (String == "big_with_cover_PhysicsAsset.big_with_cover_PhysicsAsset_7")       return ECityObjectLabel::Freicar7;
+  else if (String == "big_with_cover_PhysicsAsset.big_with_cover_PhysicsAsset_8")       return ECityObjectLabel::Freicar8;
+  else if (String == "big_with_cover_PhysicsAsset.big_with_cover_PhysicsAsset_9")       return ECityObjectLabel::Freicar9;
+  else if (String == "big_with_cover_PhysicsAsset.big_with_cover_PhysicsAsset_10")      return ECityObjectLabel::Freicar10;
+  else                                  return ECityObjectLabel::None;
+}
+
 template <typename T>
 static ECityObjectLabel GetLabelByPath(const T *Object)
 {
   const FString Path = Object->GetPathName();
   TArray<FString> StringArray;
   Path.ParseIntoArray(StringArray, TEXT("/"), false);
-  return (StringArray.Num() > 4 ? GetLabelByFolderName(StringArray[4]) : ECityObjectLabel::None);
+   //UE_LOG(LogCarla, Log, TEXT("Full Path: %s"), *Path);
+   //UE_LOG(LogCarla, Log,TEXT("Last part: %s"), *StringArray[StringArray.Num()-1]);
+   ECityObjectLabel instance_label = GetLabelByAssetName(StringArray[StringArray.Num()-1]);
+  if (instance_label != ECityObjectLabel::None){
+    return instance_label;
+  }else
+    return (StringArray.Num() > 4 ? GetLabelByFolderName(StringArray[4]) : ECityObjectLabel::None);
 }
 
 static void SetStencilValue(
@@ -70,7 +90,8 @@ void ATagger::TagActor(const AActor &Actor, bool bTagForSemanticSegmentation)
   Actor.GetComponents<UStaticMeshComponent>(StaticMeshComponents);
   for (UStaticMeshComponent *Component : StaticMeshComponents) {
     const auto Label = GetLabelByPath(Component->GetStaticMesh());
-    SetStencilValue(*Component, Label, bTagForSemanticSegmentation);
+    if (Label != ECityObjectLabel::None)
+      SetStencilValue(*Component, Label, bTagForSemanticSegmentation);
 #ifdef CARLA_TAGGER_EXTRA_LOG
     UE_LOG(LogCarla, Log, TEXT("  + StaticMeshComponent: %s"), *Component->GetName());
     UE_LOG(LogCarla, Log, TEXT("    - Label: \"%s\""), *GetTagAsString(Label));
@@ -82,7 +103,8 @@ void ATagger::TagActor(const AActor &Actor, bool bTagForSemanticSegmentation)
   Actor.GetComponents<USkeletalMeshComponent>(SkeletalMeshComponents);
   for (USkeletalMeshComponent *Component : SkeletalMeshComponents) {
     const auto Label = GetLabelByPath(Component->GetPhysicsAsset());
-    SetStencilValue(*Component, Label, bTagForSemanticSegmentation);
+    if (Label != ECityObjectLabel::None)
+	    SetStencilValue(*Component, Label, bTagForSemanticSegmentation);
 #ifdef CARLA_TAGGER_EXTRA_LOG
     UE_LOG(LogCarla, Log, TEXT("  + SkeletalMeshComponent: %s"), *Component->GetName());
     UE_LOG(LogCarla, Log, TEXT("    - Label: \"%s\""), *GetTagAsString(Label));
