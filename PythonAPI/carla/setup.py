@@ -10,7 +10,6 @@ from setuptools import setup, Extension
 
 import fnmatch
 import os
-import platform
 import sys
 
 def is_rss_variant_enabled():
@@ -34,7 +33,7 @@ def get_libcarla_extensions():
 
     if os.name == "posix":
         # @todo Replace deprecated method.
-        linux_distro = platform.dist()[0]  # pylint: disable=W1505
+        linux_distro = "ubuntu"  # pylint: disable=W1505
         if linux_distro.lower() in ["ubuntu", "debian", "deepin"]:
             pwd = os.path.dirname(os.path.realpath(__file__))
             pylib = "libboost_python%d%d.a" % (sys.version_info.major,
