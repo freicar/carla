@@ -71,6 +71,7 @@ unset LLVM_BASENAME
 
 BOOST_VERSION=1.72.0
 BOOST_BASENAME="boost-${BOOST_VERSION}-${CXX_TAG}"
+BOOST_SHA256SUM="c66e88d5786f2ca4dbebb14e06b566fb642a1a6947ad8cc9091f9f445134143f"
 
 BOOST_INCLUDE=${PWD}/${BOOST_BASENAME}-install/include
 BOOST_LIBPATH=${PWD}/${BOOST_BASENAME}-install/lib
@@ -84,11 +85,21 @@ else
   BOOST_PACKAGE_BASENAME=boost_${BOOST_VERSION//./_}
 
   log "Retrieving boost."
-  wget "https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/${BOOST_PACKAGE_BASENAME}.tar.gz" || true
+
+  start=$(date +%s)
+  wget "https://archives.boost.io/release/${BOOST_VERSION}/source/${BOOST_PACKAGE_BASENAME}.tar.gz" -O ${BOOST_PACKAGE_BASENAME}.tar.gz || true
+  end=$(date +%s)
+  echo "Elapsed Time downloading from boost webpage: $(($end-$start)) seconds"
+
   # try to use the backup boost we have in Jenkins
-  if [[ ! -f "${BOOST_PACKAGE_BASENAME}.tar.gz" ]] ; then
+  if [ ! -f "${BOOST_PACKAGE_BASENAME}.tar.gz" ] || [[ $(sha256sum "${BOOST_PACKAGE_BASENAME}.tar.gz" | cut -d " " -f 1 ) != "${BOOST_SHA256SUM}" ]] ; then
     log "Using boost backup"
-    wget "https://carla-releases.s3.eu-west-3.amazonaws.com/Backup/${BOOST_PACKAGE_BASENAME}.tar.gz" || true
+
+    start=$(date +%s)
+    wget "https://carla-releases.s3.us-east-005.backblazeb2.com/Backup/${BOOST_PACKAGE_BASENAME}.tar.gz" -O ${BOOST_PACKAGE_BASENAME}.tar.gz || true
+    end=$(date +%s)
+    echo "Elapsed Time downloading from boost carla backup in backblaze: $(($end-$start)) seconds"
+
   fi
 
   log "Extracting boost for Python 2."
